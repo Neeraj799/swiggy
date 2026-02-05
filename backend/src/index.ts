@@ -1,10 +1,9 @@
-import express from "express";
-import type { Request, Response } from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import "dotenv/config";
 import mongoose from "mongoose";
 
-import userRoutes from "./routes/user.routes.ts";
+import userRoutes from "./routes/user.routes";
 
 mongoose
   .connect(process.env.MONGO_URL as string)
@@ -13,6 +12,10 @@ mongoose
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+app.get("/health", async (req: Request, res: Response) => {
+  res.send({ message: "health OK!" });
+});
 
 app.use("/api/user", userRoutes);
 

@@ -1,9 +1,12 @@
 import express from "express";
-import { createUser } from "../controller/user.controller.ts";
-import { jwtCheck } from "../middleware/auth.ts";
+import { createUser, getUser, updateUser } from "../controller/user.controller";
+import { jwtCheck, jwtParse } from "../middleware/auth";
+import { validateUserRequest } from "../middleware/validation";
 
 const router = express.Router();
 
+router.get("/", jwtCheck, jwtParse, getUser);
 router.post("/", jwtCheck, createUser);
+router.patch("/", jwtCheck, jwtParse, validateUserRequest, updateUser);
 
 export default router;
