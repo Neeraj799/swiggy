@@ -1,23 +1,37 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
-import UserProfile from "./pages/UserProfile";
 import Layout from "./layouts/Layout";
 import AuthCallbackpage from "./pages/AuthCallbackpage";
+import UserProfile from "./pages/UserProfile";
+import { Toaster } from "sonner";
+import ProtectedRoute from "./auth/ProtectedRoute";
 
 function App() {
   return (
     <>
+      <Toaster visibleToasts={1} position="top-right" richColors />
       <Routes>
         <Route
           path="/"
           element={
-            <Layout>
+            <Layout showHero={true}>
               <Home />
             </Layout>
           }
         />
         <Route path="/auth-callback" element={<AuthCallbackpage />} />
-        <Route path="/user-profile" element={<UserProfile />} />
+
+        <Route element={<ProtectedRoute />}>
+          <Route
+            path="/user-profile"
+            element={
+              <Layout>
+                <UserProfile />
+              </Layout>
+            }
+          />
+        </Route>
+
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </>
