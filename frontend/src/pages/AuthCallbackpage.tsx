@@ -1,5 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useCreateUser } from "../api/UserApi";
 import { useNavigate } from "react-router-dom";
 
