@@ -53,10 +53,10 @@ type RestaurantFormData = z.infer<typeof formSchema>;
 type Props = {
   restaurant?: Restaurant;
   onSave: (restaurantFormData: FormData) => void;
-  isLoading: boolean;
+  isPending: boolean;
 };
 
-const ManageRestaurantForm = ({ onSave, isLoading, restaurant }: Props) => {
+const ManageRestaurantForm = ({ onSave, isPending, restaurant }: Props) => {
   const form = useForm<RestaurantFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -128,7 +128,7 @@ const ManageRestaurantForm = ({ onSave, isLoading, restaurant }: Props) => {
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit<RestaurantFormData>(onSubmit)}
         className="space-y-8 bg-gray-50 p-10 rounded-lg"
       >
         <DetailsSection />
@@ -138,7 +138,7 @@ const ManageRestaurantForm = ({ onSave, isLoading, restaurant }: Props) => {
         <MenuSection />
         <Separator />
         <ImageSection />
-        {isLoading ? <LoadingButton /> : <Button type="submit">Submit</Button>}
+        {isPending ? <LoadingButton /> : <Button type="submit">Submit</Button>}
       </form>
     </Form>
   );
