@@ -1,9 +1,40 @@
 import type { Restaurant } from "@/types/types";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+export const useGetRestaurant = () => {
+  const { getAccessTokenSilently } = useAuth0();
+  const getRestaurantRequest = async (): Promise<Restaurant> => {
+    const accessToken = await getAccessTokenSilently();
+
+    const response = await fetch(`${API_BASE_URL}/api/restaurant`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to get restaurant");
+    }
+
+    return response.json();
+  };
+
+  const {
+    data: restaurant,
+    isPending,
+    error,
+  } = useQuery({
+    queryKey: ["restaurant"],
+    queryFn: getRestaurantRequest,
+  });
+
+  return { restaurant, isPending };
+};
 
 export const useCreateRestaurant = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -39,4 +70,40 @@ export const useCreateRestaurant = () => {
   });
 
   return { createRestaurant, isPending };
+};
+
+export const useUpdateRestaurant = () => {
+  const { getAccessTokenSilently } = useAuth0();
+
+  const updatedRestaurantRequest = async (
+    restaurantFormData: FormData,
+  ): Promise<Restaurant> => {
+    const accessToken = await getAccessTokenSilently();
+
+    const response = await fetch(`${API_BASE_URL}/api/restaurant`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: restaurantFormData,
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update restaurant");
+    }
+
+    return response.json();
+  };
+
+  const { mutate: updatedRestaurant, isPending } = useMutation({
+    mutationFn: updatedRestaurantRequest,
+    onSuccess: () => {
+      toast.success("Restaurant Updated");
+    },
+    onError: () => {
+      toast.error("Unable to update restaurant");
+    },
+  });
+
+  return { updatedRestaurant, isPending };
 };
