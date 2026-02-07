@@ -13,8 +13,8 @@ const AuthCallbackpage = () => {
     if (user?.sub && user?.email && !hasCreatedUser.current) {
       createUser({ auth0Id: user.sub, email: user.email });
       hasCreatedUser.current = true;
+      navigate("/");
     }
-    navigate("/");
   }, [createUser, navigate, user]);
 
   return <div>Loading...</div>;
