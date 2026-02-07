@@ -1,6 +1,6 @@
 import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import DetailsSection from "./DetailsSection";
 import { Separator } from "@/components/ui/separator";
@@ -89,7 +89,7 @@ const ManageRestaurantForm = ({ onSave, isLoading, restaurant }: Props) => {
     form.reset(updatedRestaurant);
   }, [form, restaurant]);
 
-  const onSubmit = (formDataJson: RestaurantFormData) => {
+  const onSubmit: SubmitHandler<RestaurantFormData> = (formDataJson) => {
     const formData = new FormData();
 
     formData.append("restaurantName", formDataJson.restaurantName);
@@ -100,13 +100,16 @@ const ManageRestaurantForm = ({ onSave, isLoading, restaurant }: Props) => {
       "deliveryPrice",
       (formDataJson.deliveryPrice * 100).toString(),
     );
+
     formData.append(
       "estimatedDeliveryTime",
       formDataJson.estimatedDeliveryTime.toString(),
     );
+
     formDataJson.cuisines.forEach((cuisine, index) => {
       formData.append(`cuisines[${index}]`, cuisine);
     });
+
     formDataJson.menuItems.forEach((menuItem, index) => {
       formData.append(`menuItems[${index}][name]`, menuItem.name);
       formData.append(
@@ -116,7 +119,7 @@ const ManageRestaurantForm = ({ onSave, isLoading, restaurant }: Props) => {
     });
 
     if (formDataJson.imageFile) {
-      formData.append(`imageFile`, formDataJson.imageFile);
+      formData.append("imageFile", formDataJson.imageFile);
     }
 
     onSave(formData);
