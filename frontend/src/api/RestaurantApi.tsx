@@ -24,11 +24,7 @@ export const useGetRestaurant = () => {
     return response.json();
   };
 
-  const {
-    data: restaurant,
-    isPending,
-    error,
-  } = useQuery({
+  const { data: restaurant, isPending } = useQuery({
     queryKey: ["restaurant"],
     queryFn: getRestaurantRequest,
   });

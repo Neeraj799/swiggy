@@ -1,6 +1,6 @@
 import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import DetailsSection from "./DetailsSection";
 import { Separator } from "@/components/ui/separator";
@@ -53,10 +53,10 @@ type RestaurantFormData = z.infer<typeof formSchema>;
 type Props = {
   restaurant?: Restaurant;
   onSave: (restaurantFormData: FormData) => void;
-  isPending: boolean;
+  isLoading: boolean;
 };
 
-const ManageRestaurantForm = ({ onSave, isPending, restaurant }: Props) => {
+const ManageRestaurantForm = ({ onSave, isLoading, restaurant }: Props) => {
   const form = useForm<RestaurantFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -89,7 +89,7 @@ const ManageRestaurantForm = ({ onSave, isPending, restaurant }: Props) => {
     form.reset(updatedRestaurant);
   }, [form, restaurant]);
 
-  const onSubmit: SubmitHandler<RestaurantFormData> = (formDataJson) => {
+  const onSubmit = (formDataJson: RestaurantFormData) => {
     const formData = new FormData();
 
     formData.append("restaurantName", formDataJson.restaurantName);
@@ -100,16 +100,13 @@ const ManageRestaurantForm = ({ onSave, isPending, restaurant }: Props) => {
       "deliveryPrice",
       (formDataJson.deliveryPrice * 100).toString(),
     );
-
     formData.append(
       "estimatedDeliveryTime",
       formDataJson.estimatedDeliveryTime.toString(),
     );
-
     formDataJson.cuisines.forEach((cuisine, index) => {
       formData.append(`cuisines[${index}]`, cuisine);
     });
-
     formDataJson.menuItems.forEach((menuItem, index) => {
       formData.append(`menuItems[${index}][name]`, menuItem.name);
       formData.append(
@@ -119,7 +116,7 @@ const ManageRestaurantForm = ({ onSave, isPending, restaurant }: Props) => {
     });
 
     if (formDataJson.imageFile) {
-      formData.append("imageFile", formDataJson.imageFile);
+      formData.append(`imageFile`, formDataJson.imageFile);
     }
 
     onSave(formData);
@@ -128,7 +125,7 @@ const ManageRestaurantForm = ({ onSave, isPending, restaurant }: Props) => {
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit<RestaurantFormData>(onSubmit)}
+        onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-8 bg-gray-50 p-10 rounded-lg"
       >
         <DetailsSection />
@@ -138,7 +135,7 @@ const ManageRestaurantForm = ({ onSave, isPending, restaurant }: Props) => {
         <MenuSection />
         <Separator />
         <ImageSection />
-        {isPending ? <LoadingButton /> : <Button type="submit">Submit</Button>}
+        {isLoading ? <LoadingButton /> : <Button type="submit">Submit</Button>}
       </form>
     </Form>
   );
