@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import { v2 as cloudinary } from "cloudinary";
 import userRoutes from "./routes/user.routes";
 import restaurantRoutes from "./routes/restaurant.routes";
+import searchRoutes from "./routes/search.routes";
 
 mongoose
   .connect(process.env.MONGO_URL as string)
@@ -24,7 +25,9 @@ app.get("/health", async (req: Request, res: Response) => {
   res.send({ message: "health OK!" });
 });
 
+app.use("/api/search", searchRoutes);
 app.use("/api/user", userRoutes);
+
 app.use("/api/restaurant", restaurantRoutes);
 
 app.listen(4800, () => {
