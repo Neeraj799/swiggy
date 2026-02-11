@@ -81,4 +81,26 @@ const updateRestaurant = async (req: Request, res: Response) => {
   }
 };
 
-export { createRestaurant, getRestaurant, updateRestaurant };
+const getRestaurantDetails = async (req: Request, res: Response) => {
+  try {
+    const restaurantId = req.params.restaurantId;
+
+    const restaurant = await Restaurant.findById(restaurantId);
+
+    if (!restaurant) {
+      return res.status(404).json({ message: "Restaurant not found" });
+    }
+
+    return res.json(restaurant);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ messgae: "Internal Server Error" });
+  }
+};
+
+export {
+  createRestaurant,
+  getRestaurant,
+  updateRestaurant,
+  getRestaurantDetails,
+};

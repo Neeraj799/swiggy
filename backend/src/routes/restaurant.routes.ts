@@ -3,10 +3,12 @@ import multer from "multer";
 import {
   createRestaurant,
   getRestaurant,
+  getRestaurantDetails,
   updateRestaurant,
 } from "../controller/restaurant.controller";
 import { jwtCheck, jwtParse } from "../middleware/auth";
 import { validateRestaurantRequest } from "../middleware/validation";
+import { param } from "express-validator";
 
 const router = express.Router();
 
@@ -36,6 +38,16 @@ router.patch(
   jwtCheck,
   jwtParse,
   updateRestaurant,
+);
+
+router.get(
+  "/:restaurantId",
+  param("restaurantId")
+    .isString()
+    .trim()
+    .notEmpty()
+    .withMessage("RestaurantId paramenter must be a valid string"),
+  getRestaurantDetails,
 );
 
 export default router;
