@@ -12,7 +12,6 @@ import {
 } from "./ui/select";
 import { ORDER_STATUS } from "@/config/order-status-config";
 import { useUpdateRestaurantOrder } from "@/api/RestaurantApi";
-import { useEffect, useState } from "react";
 
 type Props = {
   order: Order;
