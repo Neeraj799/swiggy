@@ -4,6 +4,8 @@ import {
   createRestaurant,
   getRestaurant,
   getRestaurantDetails,
+  getRestaurantOrders,
+  updateOrderStatus,
   updateRestaurant,
 } from "../controller/restaurant.controller";
 import { jwtCheck, jwtParse } from "../middleware/auth";
@@ -19,6 +21,10 @@ const upload = multer({
     fileSize: 5 * 1024 * 1024, //5mb
   },
 });
+
+router.get("/order", jwtCheck, jwtParse, getRestaurantOrders);
+
+router.patch("/order/:orderId/status", jwtCheck, jwtParse, updateOrderStatus);
 
 router.get("/", jwtCheck, jwtParse, getRestaurant);
 

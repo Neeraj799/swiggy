@@ -2,10 +2,13 @@ import express from "express";
 import { jwtCheck, jwtParse } from "../middleware/auth";
 import {
   createCheckoutSession,
+  getOrders,
   stripeWebhookHandler,
 } from "../controller/order.controller";
 
 const router = express.Router();
+
+router.get("/", jwtCheck, jwtParse, getOrders);
 
 router.post(
   "/checkout/create-checkout-session",
