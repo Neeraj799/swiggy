@@ -1,6 +1,6 @@
-import type { Restaurant } from "@/types/types";
+import type { Order, Restaurant } from "@/types/types";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -102,4 +102,82 @@ export const useUpdateRestaurant = () => {
   });
 
   return { updatedRestaurant, isPending };
+};
+
+export const useGetRestaurantOrders = () => {
+  const { getAccessTokenSilently } = useAuth0();
+
+  const getRestaurantOrdersRequest = async (): Promise<Order[]> => {
+    const accessToken = await getAccessTokenSilently();
+
+    const response = await fetch(`${API_BASE_URL}/api/restaurant/order`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch orders");
+    }
+
+    return response.json();
+  };
+
+  const { data: orders, isPending } = useQuery({
+    queryKey: ["fetchRestaurantOrders"],
+    queryFn: getRestaurantOrdersRequest,
+  });
+
+  return { orders, isPending };
+};
+
+type UpdateOrderStatusRequest = {
+  orderId: string;
+  status: string;
+};
+
+export const useUpdateRestaurantOrder = () => {
+  const { getAccessTokenSilently } = useAuth0();
+  const queryClient = useQueryClient();
+
+  const updateRestaurantOrder = async (
+    updateStatusOrderRequest: UpdateOrderStatusRequest,
+  ) => {
+    const accessToken = await getAccessTokenSilently();
+
+    const response = await fetch(
+      `${API_BASE_URL}/api/restaurant/order/${updateStatusOrderRequest.orderId}/status`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({ status: updateStatusOrderRequest.status }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to update status");
+    }
+
+    return response.json();
+  };
+
+  const { mutateAsync: updateRestaurantStatus, isPending } = useMutation({
+    mutationFn: updateRestaurantOrder,
+    onSuccess: () => {
+      toast.success("Order updated");
+
+      queryClient.invalidateQueries({
+        queryKey: ["fetchRestaurantOrders"],
+      });
+    },
+    onError: () => {
+      toast.error("Unable to update order");
+    },
+  });
+
+  return { updateRestaurantStatus, isPending };
 };
