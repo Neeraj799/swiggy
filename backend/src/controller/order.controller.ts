@@ -153,6 +153,7 @@ const createSession = async (
   restaurantId: string,
 ) => {
   const sessionData = await STRIPE.checkout.sessions.create({
+    payment_method_types: ["card"],
     line_items: lineItems,
     shipping_options: [
       {
